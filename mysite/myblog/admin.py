@@ -4,6 +4,9 @@ from django.utils import timezone
 
 
 def make_published(modeladmin, request, queryset):
+    """
+    Function that defines admin action for bulk publishing posts.
+    """
     queryset.update(published_date=timezone.now())
 make_published.short_description = 'Publish selected posts'
 
