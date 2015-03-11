@@ -1,6 +1,7 @@
 from django.contrib import admin
-from myblog.models import Post, Category
+from django.core.urlresolvers import reverse
 from django.utils import timezone
+from myblog.models import Post, Category
 
 
 def make_published(modeladmin, request, queryset):
@@ -19,8 +20,8 @@ class PostAdmin(admin.ModelAdmin):
     inlines = (CategoryInline,)
     actions = (make_published,)
     list_display = (
-        'title',
-        'author',
+        '__unicode__',
+        'author_for_admin',
         'created_date',
         'modified_date',
         'published_date',
@@ -37,6 +38,14 @@ class PostAdmin(admin.ModelAdmin):
         'modified_date',
     )
 
+    def author_for_admin(self, obj):
+        author = obj.author
+        url = reverse('admin:auth_user_change', args=(author.pk,))
+        name = author.get_full_name() or author.username
+        link = '<a href="{}">{}</a>'.format(url, name)
+        return link
+    author_for_admin.short_description = 'Author'
+    author_for_admin.allow_tags = True
 
 class CategoryAdmin(admin.ModelAdmin):
     exclude = ('posts',)
